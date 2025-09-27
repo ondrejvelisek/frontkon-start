@@ -1,7 +1,8 @@
-import { getPost, getPosts } from "@/postsClient";
+import { getPost } from "@/postsClient";
 import { useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
+import { createIsomorphicFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/blog/$postId")({
   component: BlogPost,
@@ -21,15 +22,27 @@ function BlogPost() {
   );
 }
 
+const getEnvPrerender = createIsomorphicFn()
+  .server(() => process.env.PRERENDER ?? "Server")
+  .client(() => "Client");
+
 const postQuery = (postId: string) =>
   ({
     queryKey: ["posts", postId],
-    queryFn: () => getPost(postId),
+    queryFn: async () => {
+      if (getEnvPrerender() === "Ano") {
+        return "loading";
+      }
+      return await getPost(postId);
+    },
     refetchOnMount: "always",
   }) as const;
 
 function PostContent() {
   const { postId } = Route.useParams();
   const post = useSuspenseQuery(postQuery(postId));
-  return <>{post.data.title}</>;
+  if (post.data === "loading") {
+    return <div id="loading-on-prerender">Loading on prerender...</div>;
+  }
+  return <div id="post-content">{post.data.title}</div>;
 }
