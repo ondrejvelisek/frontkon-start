@@ -21,10 +21,12 @@ function BlogPost() {
   );
 }
 
-const postQuery = (postId: string) => ({
-  queryKey: ["posts", postId],
-  queryFn: () => getPost(postId),
-});
+const postQuery = (postId: string) =>
+  ({
+    queryKey: ["posts", postId],
+    queryFn: () => getPost(postId),
+    refetchOnMount: "always",
+  }) as const;
 
 function PostContent() {
   const { postId } = Route.useParams();
