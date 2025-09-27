@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router";
 
 export default function Header() {
   return (
@@ -6,16 +6,16 @@ export default function Header() {
       <nav className="flex flex-row">
         <div className="px-2 font-bold">
           <Link to="/">Home</Link>
+          <Link to="/blog">Blog</Link>
+          <Link to="/blog/$postId" params={{ postId: "2" }}>
+            Post 2
+          </Link>
         </div>
 
-        <div className="px-2 font-bold">
-          <Link to="/demo/start/server-funcs">Start - Server Functions</Link>
-        </div>
+        <div className="px-2 font-bold"></div>
 
-        <div className="px-2 font-bold">
-          <Link to="/demo/start/api-request">Start - API Request</Link>
-        </div>
+        <div className="px-2 font-bold"></div>
       </nav>
     </header>
-  )
+  );
 }

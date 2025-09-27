@@ -15,6 +15,10 @@ const config = defineConfig({
     tanstackStart({
       target: "netlify",
       customViteReactPlugin: true,
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+      },
     }),
     netlify(),
     viteReact(),

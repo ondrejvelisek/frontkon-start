@@ -1,15 +1,9 @@
 import { getPost, getPosts } from "@/postsClient";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { z } from "zod";
-
-type BlogSearch = {
-  postId: string;
-};
 
 export const Route = createFileRoute("/blog/")({
   component: Blog,
-  loader: async () => await getPosts(),
 });
 
 const postQuery = (postId: string) => ({
@@ -23,7 +17,12 @@ const postsQuery = {
 };
 
 function Blog() {
-  const { postId } = Route.useParams();
-  const posts = useSuspenseQuery(postQuery(postId));
-  return null;
+  return (
+    <>
+      Blog page
+      <Link to="/blog/$postId" params={{ postId: "1" }}>
+        Post 1
+      </Link>
+    </>
+  );
 }

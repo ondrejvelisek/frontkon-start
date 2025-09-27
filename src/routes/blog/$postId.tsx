@@ -1,18 +1,24 @@
 import { getPost, getPosts } from "@/postsClient";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 
 export const Route = createFileRoute("/blog/$postId")({
   component: BlogPost,
-  loader: async ({ context }) => {
-    const queryClient = context.queryClient;
-    await queryClient.ensureQueryData(postsQuery);
+  loader: async ({ context, params }) => {
+    const postId = params.postId;
+    const ctx = context as { queryClient: QueryClient };
+    const queryClient = ctx.queryClient;
+    queryClient.prefetchQuery(postQuery(postId));
   },
 });
 
 function BlogPost() {
-  return <div />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PostContent />
+    </Suspense>
+  );
 }
 
 const postQuery = (postId: string) => ({
@@ -20,18 +26,8 @@ const postQuery = (postId: string) => ({
   queryFn: () => getPost(postId),
 });
 
-const readTimeQuery = (postId: string) => ({
-  queryKey: ["posts", postId],
-  queryFn: () => getPost(postId),
-});
-
 function PostContent() {
   const { postId } = Route.useParams();
-  const post = useSuspenseQuery({
-    queryKey: ["posts", postId],
-    queryFn: () => getPost(postId),
-  });
+  const post = useSuspenseQuery(postQuery(postId));
   return <>{post.data.title}</>;
 }
-
-const getReadTime = (postId: string) => {};
